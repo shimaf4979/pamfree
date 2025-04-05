@@ -1,0 +1,22 @@
+@baseUrl=https://api.pamfree.com/api
+@token_shimayuu3412=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTc3NGU3M2EtOWVhOC00Y2I5LTgxYjctMTYzNjJmYmQyNDRiIiwiZW1haWwiOiJzaGltYXl1dTM0MTJAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJleHAiOjE3NDM5MzkxNTYsImlhdCI6MTc0Mzg1Mjc1Nn0.vsWpFA9VKOp8UMZLyaRa-sKsjTghGTn0pdAxpY7louo
+
+### health check
+GET {{baseUrl}}/health
+
+### login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "shimayuu3412@gmail.com",
+    "password": "Yamamoto3412"
+}
+
+### get maps
+GET {{baseUrl}}/maps
+Authorization: Bearer {{token_shimayuu3412}}
+
+### get map
+GET {{baseUrl}}/maps/1
+Authorization: Bearer {{token_shimayuu3412}}

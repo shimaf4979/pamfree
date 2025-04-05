@@ -1,12 +1,12 @@
-// app/account/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { accountAPI } from '@/lib/api-client';
 
 export default function AccountPage() {
-  const { data: session, status, update } = useSession();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -14,46 +14,28 @@ export default function AccountPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
+  // 認証状態をチェック
   useEffect(() => {
-    if (status === 'loading') return;
-
-    // 未認証ユーザーはログインページへリダイレクト
-    if (status === 'unauthenticated') {
+    if (!isLoading && !isAuthenticated) {
       router.push('/login');
-      return;
     }
-
-    // セッションからユーザー名を設定
-    if (session?.user?.name) {
-      setName(session.user.name);
+    
+    if (user) {
+      setName(user.name || '');
     }
-  }, [session, status, router]);
+  }, [isLoading, isAuthenticated, router, user]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setError('');
-    setLoading(true);
+    setUpdateLoading(true);
 
     try {
-      const response = await fetch('/api/account/update-profile', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'プロフィールの更新に失敗しました');
-      }
-
-      // セッション情報を更新
-      await update({ name });
+      const data = await accountAPI.updateProfile(name);
       setMessage('プロフィールを更新しました');
     } catch (error) {
       if (error instanceof Error) {
@@ -62,7 +44,7 @@ export default function AccountPage() {
         setError('プロフィールの更新中にエラーが発生しました');
       }
     } finally {
-      setLoading(false);
+      setUpdateLoading(false);
     }
   };
 
@@ -76,23 +58,10 @@ export default function AccountPage() {
       return;
     }
 
-    setLoading(true);
+    setPasswordLoading(true);
 
     try {
-      const response = await fetch('/api/account/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'パスワードの変更に失敗しました');
-      }
-
+      await accountAPI.changePassword(currentPassword, newPassword);
       setMessage('パスワードを変更しました');
       setCurrentPassword('');
       setNewPassword('');
@@ -104,11 +73,11 @@ export default function AccountPage() {
         setError('パスワードの変更中にエラーが発生しました');
       }
     } finally {
-      setLoading(false);
+      setPasswordLoading(false);
     }
   };
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -146,7 +115,7 @@ export default function AccountPage() {
                 type="email"
                 id="email"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
-                value={session?.user?.email || ''}
+                value={user?.email || ''}
                 disabled
               />
               <p className="mt-1 text-xs text-gray-500">メールアドレスは変更できません</p>
@@ -169,10 +138,10 @@ export default function AccountPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={updateLoading}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
               >
-                {loading ? '更新中...' : '更新する'}
+                {updateLoading ? '更新中...' : '更新する'}
               </button>
             </div>
           </form>
@@ -231,10 +200,10 @@ export default function AccountPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={passwordLoading}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
               >
-                {loading ? '変更中...' : 'パスワードを変更'}
+                {passwordLoading ? '変更中...' : 'パスワードを変更'}
               </button>
             </div>
           </form>

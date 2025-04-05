@@ -1,24 +1,29 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail, Lock, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
-// 検索パラメータを使用する部分を別コンポーネントに分離
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
   const router = useRouter();
-  
-  // useSearchParamsはここで使用
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   const registered = searchParams.get('registered') === 'true';
+
+  // 認証済みの場合はダッシュボードにリダイレクト
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,24 +31,12 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-        callbackUrl,
-      });
-
-      if (result?.error) {
-        setError('メールアドレスまたはパスワードが正しくありません');
-        setLoading(false);
-        return;
-      }
-
+      await login(email, password);
       router.push(callbackUrl);
-      router.refresh();
     } catch (error) {
       console.error('ログインエラー:', error);
-      setError('ログイン中にエラーが発生しました');
+      setError('メールアドレスまたはパスワードが正しくありません');
+    } finally {
       setLoading(false);
     }
   };
@@ -166,12 +159,6 @@ function LoginForm() {
               </button>
             </div>
           </form>
-          
-          {/* <div className="mt-6 text-center">
-            <Link href="/forgot-password" className="text-sm text-sky-600 hover:text-sky-700 transition-colors">
-              パスワードをお忘れですか？
-            </Link>
-          </div> */}
         </motion.div>
         
         <motion.div
@@ -190,10 +177,13 @@ function LoginForm() {
   );
 }
 
-// メインのコンポーネント
-export default function Login() {
+export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+      </div>
+    }>
       <LoginForm />
     </Suspense>
   );

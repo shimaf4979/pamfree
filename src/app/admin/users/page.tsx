@@ -1,9 +1,9 @@
-// app/admin/users/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { adminAPI } from '@/lib/api-client';
 
 type User = {
   id: string;
@@ -14,7 +14,7 @@ type User = {
 };
 
 export default function AdminUsersPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,39 +23,36 @@ export default function AdminUsersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newRole, setNewRole] = useState('');
 
+  // 認証状態と権限をチェック
   useEffect(() => {
-    if (status === 'loading') return;
+    if (!isLoading) {
+      // 非認証ユーザーはログインページへリダイレクト
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
 
-    // 非認証ユーザーはログインページへリダイレクト
-    if (status === 'unauthenticated') {
-      router.push('/login');
-      return;
+      // 管理者以外は403ページやダッシュボードへリダイレクト
+      if (user?.role !== 'admin') {
+        router.push('/dashboard');
+        return;
+      }
+
+      // ユーザー一覧を取得
+      fetchUsers();
     }
-
-    // 管理者以外は403ページやダッシュボードへリダイレクト
-    if (session?.user?.role !== 'admin') {
-      router.push('/dashboard');
-      return;
-    }
-
-    // ユーザー一覧を取得
-    fetchUsers();
-  }, [session, status, router]);
+  }, [isLoading, isAuthenticated, user, router]);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/users');
-      if (!response.ok) {
-        throw new Error('ユーザー一覧の取得に失敗しました');
-      }
-      const data = await response.json();
+      const data = await adminAPI.getUsers();
       setUsers(data);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('エラーが発生しました');
+        setError('ユーザー一覧の取得に失敗しました');
       }
     } finally {
       setLoading(false);
@@ -77,18 +74,7 @@ export default function AdminUsersPage() {
     if (!selectedUser) return;
 
     try {
-      const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'ユーザー役割の更新に失敗しました');
-      }
+      await adminAPI.updateUserRole(selectedUser.id, newRole);
 
       // 成功したらユーザー一覧を更新
       fetchUsers();
@@ -97,7 +83,7 @@ export default function AdminUsersPage() {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('エラーが発生しました');
+        setError('ユーザー役割の更新に失敗しました');
       }
     }
   };
@@ -108,27 +94,19 @@ export default function AdminUsersPage() {
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'ユーザーの削除に失敗しました');
-      }
-
+      await adminAPI.deleteUser(userId);
       // 成功したらユーザー一覧を更新
       fetchUsers();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('エラーが発生しました');
+        setError('ユーザーの削除に失敗しました');
       }
     }
   };
 
-  if (loading && status !== 'loading') {
+  if (loading) {
     return (
       <div className="container mx-auto p-6">
         <h1 className="text-2xl font-bold mb-6">ユーザー管理</h1>
@@ -193,14 +171,14 @@ export default function AdminUsersPage() {
                   <button
                     onClick={() => openRoleModal(user)}
                     className="text-indigo-600 hover:text-indigo-900 mr-4"
-                    disabled={session?.user?.id === user.id}
+                    disabled={user.id === user.id}
                   >
                     役割変更
                   </button>
                   <button
                     onClick={() => deleteUser(user.id)}
                     className="text-red-600 hover:text-red-900"
-                    disabled={session?.user?.id === user.id}
+                    disabled={user.id === user.id}
                   >
                     削除
                   </button>

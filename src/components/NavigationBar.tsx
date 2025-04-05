@@ -3,11 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Dela_Gothic_One } from 'next/font/google';
-import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useAuth } from '@/context/AuthContext';
 
 const delaGothicOne = Dela_Gothic_One({
   subsets: ['latin'],
@@ -15,12 +14,13 @@ const delaGothicOne = Dela_Gothic_One({
 });
 
 export default function NavigationBar() {
-  const { data: session } = useSession();
+  const { user, isLoading, logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   
-  // useEffect内でパスをチェックする
+  // パスをチェックしてナビゲーションバーの表示・非表示を決定
   useEffect(() => {
     setShowNavbar(pathname !== '/login' && pathname !== '/register');
   }, [pathname]);
@@ -37,6 +37,13 @@ export default function NavigationBar() {
     };
   }, [isMenuOpen]);
 
+  // ログアウト処理
+  const handleLogout = async () => {
+    setIsMenuOpen(false);
+    await logout();
+    router.push('/login');
+  };
+
   // ナビゲーションバーを表示しない条件
   if (!showNavbar) {
     return null;
@@ -52,7 +59,7 @@ export default function NavigationBar() {
                 <Image src="/logo.svg" alt="Pamfree" width={150} height={150} />
               </Link>
             </div>
-            {session && (
+            {user && (
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <Link
                   href="/dashboard"
@@ -78,7 +85,9 @@ export default function NavigationBar() {
             )}
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            {session ? (
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            ) : user ? (
               <div className="relative ml-3">
                 <div>
                   <button
@@ -86,7 +95,7 @@ export default function NavigationBar() {
                     className="flex text-sm rounded-full focus:outline-none"
                   >
                     <span className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                      {session.user?.name || session.user?.email}
+                      {user.name || user.email}
                       <svg
                         className="-mr-1 ml-2 h-5 w-5"
                         xmlns="http://www.w3.org/2000/svg"
@@ -103,38 +112,34 @@ export default function NavigationBar() {
                     </span>
                   </button>
                 </div>
-                {/* ドロップダウンでもAnimatePresenceをシンプルな実装に変更 */}
-                  {isMenuOpen && (
-                    <div
-                      className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-animation"
+                {isMenuOpen && (
+                  <div
+                    className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-animation"
+                  >
+                    <Link
+                      href="/account"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsMenuOpen(false)}
                     >
+                      アカウント設定
+                    </Link>
+                    {user.role === 'admin' && (
                       <Link
-                        href="/account"
+                        href="/admin/users"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        アカウント設定
+                        ユーザー管理
                       </Link>
-                      {session.user?.role === 'admin' && (
-                        <Link
-                          href="/admin/users"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          ユーザー管理
-                        </Link>
-                      )}
-                      <button
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          signOut({ callbackUrl: '/' });
-                        }}
-                        className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        ログアウト
-                      </button>
-                    </div>
-                  )}
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      ログアウト
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex space-x-4">
@@ -195,117 +200,113 @@ export default function NavigationBar() {
       </div>
 
       {/* モバイルメニュー */}
-      {/* AnimatePresenceを使わない単純な実装に変更 */}
-        {isMenuOpen && (
-          <>
-            {/* 半透明の背景オーバーレイ */}
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden mobile-menu-overlay"
-              onClick={() => setIsMenuOpen(false)}
-            />
-            
-            {/* メニューコンテンツ */}
-            <div
-              className="sm:hidden bg-white relative z-50 overflow-hidden mobile-menu-content"
-            >
-              <div className="pt-2 pb-3 space-y-1">
-                {session && (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                        pathname === '/dashboard'
-                          ? 'bg-blue-50 border-blue-500 text-blue-700'
-                          : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      ダッシュボード
-                    </Link>
-                    <Link
-                      href="/account"
-                      className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                        pathname === '/account'
-                          ? 'bg-blue-50 border-blue-500 text-blue-700'
-                          : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      アカウント
-                    </Link>
-                  </>
-                )}
-              </div>
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                {session ? (
-                  <>
-                    <div className="flex items-center px-4">
-                      <div className="flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <span className="text-blue-800 font-medium">
-                            {(session.user?.name || session.user?.email || '?').charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="ml-3">
-                        <div className="text-base font-medium text-gray-800">
-                          {session.user?.name || '名前なし'}
-                        </div>
-                        <div className="text-sm font-medium text-gray-500">
-                          {session.user?.email}
-                        </div>
+      {isMenuOpen && (
+        <>
+          {/* 半透明の背景オーバーレイ */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden mobile-menu-overlay"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          
+          {/* メニューコンテンツ */}
+          <div
+            className="sm:hidden bg-white relative z-50 overflow-hidden mobile-menu-content"
+          >
+            <div className="pt-2 pb-3 space-y-1">
+              {user && (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                      pathname === '/dashboard'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    ダッシュボード
+                  </Link>
+                  <Link
+                    href="/account"
+                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                      pathname === '/account'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    アカウント
+                  </Link>
+                </>
+              )}
+            </div>
+            <div className="pt-4 pb-3 border-t border-gray-200">
+              {user ? (
+                <>
+                  <div className="flex items-center px-4">
+                    <div className="flex-shrink-0">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span className="text-blue-800 font-medium">
+                          {(user.name || user.email || '?').charAt(0).toUpperCase()}
+                        </span>
                       </div>
                     </div>
-                    <div className="mt-3 space-y-1">
+                    <div className="ml-3">
+                      <div className="text-base font-medium text-gray-800">
+                        {user.name || '名前なし'}
+                      </div>
+                      <div className="text-sm font-medium text-gray-500">
+                        {user.email}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    <Link
+                      href="/account"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      アカウント設定
+                    </Link>
+                    {user.role === 'admin' && (
                       <Link
-                        href="/account"
+                        href="/admin/users"
                         className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        アカウント設定
+                        ユーザー管理
                       </Link>
-                      {session.user?.role === 'admin' && (
-                        <Link
-                          href="/admin/users"
-                          className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          ユーザー管理
-                        </Link>
-                      )}
-                      <button
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          signOut({ callbackUrl: '/' });
-                        }}
-                        className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                      >
-                        ログアウト
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="mt-3 space-y-1 px-2">
-                    <Link
-                      href="/login"
-                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                      onClick={() => setIsMenuOpen(false)}
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                     >
-                      ログイン
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      新規登録
-                    </Link>
+                      ログアウト
+                    </button>
                   </div>
-                )}
-              </div>
+                </>
+              ) : (
+                <div className="mt-3 space-y-1 px-2">
+                  <Link
+                    href="/login"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    ログイン
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    新規登録
+                  </Link>
+                </div>
+              )}
             </div>
-          </>
-        )}
+          </div>
+        </>
+      )}
     </nav>
   );
 }
