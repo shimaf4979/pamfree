@@ -15,7 +15,10 @@
     "@react-three/drei": "^10.0.4",
     "@react-three/fiber": "^9.1.0",
     "@supabase/supabase-js": "^2.49.1",
+    "@tanstack/react-query": "^5.74.4",
+    "@tanstack/react-query-devtools": "^5.74.6",
     "@types/noble": "^0.0.44",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.0",
@@ -36,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.14",
     "@types/bcrypt": "^5.0.2",
