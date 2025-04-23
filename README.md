@@ -64,6 +64,10 @@ Pamfreeのアイコンは、ピンを意識して描かれています。
 
 faviconを変更しました。PamfreeのPがiconになっています。
 
+## ver1.3.2
+
+一旦安定版としてAPIRoutesに変更しています。
+
 ## tree
 
 構成は以下の通りです。
