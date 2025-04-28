@@ -1,0 +1,343 @@
+# <img src="/logo.svg" alt="Pamfree Logo" style={{ height: '80px', display: 'block', margin: '0 auto' }} />
+
+<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+  <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pamfree 仕様書</h1>
+  <p style={{ fontSize: '1.1rem', color: '#666' }}>
+    コンポーネント駆動開発のためのStorybook設計ドキュメント
+  </p>
+</div>
+
+<div
+  style={{
+    padding: '1rem',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.5rem',
+    marginBottom: '2rem',
+    display: 'flex',
+    gap: '0.75rem',
+  }}
+>
+  <div style={{ flexShrink: 0, color: '#3b82f6' }}>ℹ️</div>
+  <div>
+    Pamfreeは、直感的なマップベースのコンテンツ管理システムです。このドキュメントでは、Storybookを使用したコンポーネント開発の仕様について説明します。
+  </div>
+</div>
+
+<hr style={{ margin: '2rem 0', border: 'none', height: '1px', backgroundColor: '#e5e7eb' }} />
+
+## Storybookのファイル構造
+
+### 設定ファイル
+
+<div
+  style={{
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    overflow: 'hidden',
+    marginBottom: '1.5rem',
+  }}
+>
+  <div
+    style={{
+      padding: '0.75rem 1rem',
+      borderBottom: '1px solid #e5e7eb',
+      backgroundColor: '#f9fafb',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <span style={{ marginRight: '0.5rem' }}>📁</span>
+      <strong>.storybook/</strong>
+    </div>
+  </div>
+  <div style={{ padding: '1rem' }}>
+    <div style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>main.ts</code>
+        <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          Storybookのメイン設定
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>preview.ts</code>
+        <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          グローバルデコレーターと表示設定
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>decorators.tsx</code>
+        <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          グローバルデコレーターの定義
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+### コンポーネントストーリー
+
+<div
+  style={{
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    overflow: 'hidden',
+    marginBottom: '1.5rem',
+  }}
+>
+  <div
+    style={{
+      padding: '0.75rem 1rem',
+      borderBottom: '1px solid #e5e7eb',
+      backgroundColor: '#f9fafb',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <span style={{ marginRight: '0.5rem' }}>📁</span>
+      <strong>src/components/</strong>
+    </div>
+  </div>
+  <div style={{ padding: '1rem' }}>
+    <div style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>ImprovedPinMarker.mdx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>PinInfo.stories.tsx</code>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>NavigationBar.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>LoadingIndicator.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>ImageUploader.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>DeleteConfirmationModal.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>QRCodeGenerator.stories.tsx</code>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+### ページストーリー
+
+<div
+  style={{
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    overflow: 'hidden',
+    marginBottom: '1.5rem',
+  }}
+>
+  <div
+    style={{
+      padding: '0.75rem 1rem',
+      borderBottom: '1px solid #e5e7eb',
+      backgroundColor: '#f9fafb',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <span style={{ marginRight: '0.5rem' }}>📁</span>
+      <strong>src/app/</strong>
+    </div>
+  </div>
+  <div style={{ padding: '1rem' }}>
+    <div style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>dashboard/page.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>login/page.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>register/page.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>maps/[mapId]/edit/page.stories.tsx</code>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>viewer/page.stories.tsx</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+### モックデータ
+
+<div
+  style={{
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    overflow: 'hidden',
+    marginBottom: '1.5rem',
+  }}
+>
+  <div
+    style={{
+      padding: '0.75rem 1rem',
+      borderBottom: '1px solid #e5e7eb',
+      backgroundColor: '#f9fafb',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <span style={{ marginRight: '0.5rem' }}>📁</span>
+      <strong>src/mocks/</strong>
+    </div>
+  </div>
+  <div style={{ padding: '1rem' }}>
+    <div style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>mockData.ts</code>
+        <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          共通のモックデータ
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ marginRight: '0.5rem' }}>📄</span>
+        <code style={{ fontFamily: 'monospace' }}>handlers.ts</code>
+        <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          MSWのリクエストハンドラー
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr style={{ margin: '2rem 0', border: 'none', height: '1px', backgroundColor: '#e5e7eb' }} />
+
+## Storybookの主な機能
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
+  <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.25rem' }}>
+    <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginTop: 0, marginBottom: '0.5rem' }}>コンポーネントの視覚的検証</h3>
+    <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>様々な状態でのUIを確認できます</p>
+  </div>
+
+<div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.25rem' }}>
+  <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginTop: 0, marginBottom: '0.5rem' }}>
+    インタラクティブな開発環境
+  </h3>
+  <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
+    リアルタイムでの変更確認が可能です
+  </p>
+</div>
+
+<div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.25rem' }}>
+  <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginTop: 0, marginBottom: '0.5rem' }}>
+    自動ドキュメンテーション生成
+  </h3>
+  <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
+    コードからドキュメントを自動生成します
+  </p>
+</div>
+
+  <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.25rem' }}>
+    <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginTop: 0, marginBottom: '0.5rem' }}>様々な状態と設定のテスト</h3>
+    <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>エッジケースも含めた検証が可能です</p>
+  </div>
+</div>
+
+<hr style={{ margin: '2rem 0', border: 'none', height: '1px', backgroundColor: '#e5e7eb' }} />
+
+## 技術的特徴
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1.5rem' }}>
+  <span
+    style={{
+      display: 'inline-block',
+      padding: '0.25rem 0.75rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      borderRadius: '9999px',
+      backgroundColor: '#f3f4f6',
+      border: '1px solid #e5e7eb',
+    }}
+  >
+    TypeScriptによる型安全性
+  </span>
+  <span
+    style={{
+      display: 'inline-block',
+      padding: '0.25rem 0.75rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      borderRadius: '9999px',
+      backgroundColor: '#f3f4f6',
+      border: '1px solid #e5e7eb',
+    }}
+  >
+    MDXによるリッチなドキュメンテーション
+  </span>
+  <span
+    style={{
+      display: 'inline-block',
+      padding: '0.25rem 0.75rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      borderRadius: '9999px',
+      backgroundColor: '#f3f4f6',
+      border: '1px solid #e5e7eb',
+    }}
+  >
+    MSW (Mock Service Worker)
+  </span>
+  <span
+    style={{
+      display: 'inline-block',
+      padding: '0.25rem 0.75rem',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      borderRadius: '9999px',
+      backgroundColor: '#f3f4f6',
+      border: '1px solid #e5e7eb',
+    }}
+  >
+    自動ドキュメンテーション
+  </span>
+</div>
+
+<hr style={{ margin: '2rem 0', border: 'none', height: '1px', backgroundColor: '#e5e7eb' }} />
+
+<div
+  style={{
+    margin: '3rem 0',
+    padding: '1.5rem',
+    backgroundColor: '#f9fafb',
+    borderRadius: '0.5rem',
+    textAlign: 'center',
+    border: '1px solid #e5e7eb',
+  }}
+>
+  <p
+    style={{
+      fontSize: '1.125rem',
+      fontWeight: '500',
+      fontStyle: 'italic',
+      margin: 0,
+      color: '#4b5563',
+    }}
+  >
+    Storybookは、Pamfreeの各コンポーネントを生き生きと可視化し、開発者のクリエイティビティを支援します。
+  </p>
+</div>
